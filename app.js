@@ -29,18 +29,14 @@ const intilizeDatabaseAndServer = async () => {
 
 intilizeDatabaseAndServer()
 
-//Get movie API
+//Get movie API 1
 app.get('/movies/', async (request, response) => {
-  const getMoviesQuery = `
-    SELECT
-        *
-    FROM
-        movie;`
-  const moviesArray = await db.all(getMoviesQuery)
+  const getMoviesQuery = `select movie_name as movieName from movie;`;
+  let moviesArray = await db.all(getMoviesQuery)
   response.send(moviesArray)
 })
 
-//Add movie API
+//Add movie API 2
 app.post('/movies/', async (request, response) => {
   const getDetails = request.body
   const {directorId, movieName, leadActor} = getDetails
@@ -56,7 +52,7 @@ app.post('/movies/', async (request, response) => {
   response.send('Movie Successfully Added')
 })
 
-//Get movie API
+//Get movie API 3
 app.get('/movies/:movieId/', async (request, response) => {
   const {movieId} = request.params
   const getMovieQuery = `
@@ -77,7 +73,7 @@ app.get('/movies/:movieId/', async (request, response) => {
   response.send(dbResponse)
 })
 
-//update movie API
+//update movie API 4
 app.put('/movies/:movieId/', async (request, response) => {
   const {movieId} = request.params
   const getBody = request.body
@@ -86,16 +82,16 @@ app.put('/movies/:movieId/', async (request, response) => {
   UPDATE
     movie
   SET 
-    director_id:${directorId},
-    movie_name: '${movieName}',
-    lead_actor: '${leadActor}'
+    director_id = ${directorId},
+    movie_name = '${movieName}',
+    lead_actor = '${leadActor}'
   WHERE
     director_id = ${movieId} ;`
   await db.run(updateMovieQuery)
   response.send('Movie Details Updated')
 })
 
-//Delete movie API
+//Delete movie API 5
 app.delete('/movies/:movieId/', async (request, response) => {
   const {movieId} = request.params
   const deleteMovieQuery = `
@@ -107,28 +103,28 @@ app.delete('/movies/:movieId/', async (request, response) => {
   response.send('Movie Removed')
 })
 
-//Get movie API
+//Get movie API 6
 app.get('/directors/', async (request, response) => {
   const getDirectorQuery = `
     select
-        *
+        director_id as directorId, director_name as directorName
     From
        director;`
   const moviesArray = await db.all(getDirectorQuery)
   response.send(moviesArray)
 })
 
-//Get movie API
+//Get movie API 7
 
 app.get('/directors/:directorId/movies/', async (request, response) => {
   const {directorId} = request.params
   const getDirectorQuery = `
     SELECT
-        movie_name
+        movie_name as movieName
     FROM
         movie joins director on movie.director_id = director.director_id
     WHERE director_id = ${directorId};`
-  const director = await db.get(getDirectorQuery)
+  const director = await db.all(getDirectorQuery)
   const {movie_name} = director
   const dbResponse = {
     movieName: movie_name,
